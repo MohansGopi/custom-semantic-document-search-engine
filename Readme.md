@@ -113,7 +113,7 @@ After successful indexing, use the `/search` endpoint with your query string.
 **Sample API Call:**
 
 ```bash
-curl "http://127.0.0.1:8000/search?q=what+is+ai"
+curl "http://127.0.0.1:8000/search?q=how ai helps in agriculture"
 ```
 
 **Success Response (200 OK):**
