@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Semantic Document Search Engine | Spritle</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+</head>
+
+<body class="bg-dark text-white">
+
+  <!-- 🔹 Loading Screen -->
+  <div id="loading-screen" class="d-flex flex-column justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <h5>Initializing RAG system...</h5>
+  </div>
+
+  <!-- 🔹 Chat Interface -->
+  <div id="chat-container" class="d-none">
+    <div id="chatArea" class="p-3 mb-5" style="margin-bottom: 80px;">
+      <!-- Chat messages will appear here -->
+    </div>
+
+    <center>
+      <input id="userQuery"
+            class="fixed-bottom mx-auto text-white p-3"
+            style="width: 80%; height: 50px; background-color: black; margin: 1%; border-radius: 10px;"
+            placeholder="Type and press Enter to send">
+    </center>
+  </div>
+
+  <script>
+    const loadingScreen = document.getElementById("loading-screen");
+    const chatContainer = document.getElementById("chat-container");
+    const chatArea = document.getElementById("chatArea");
+    const input = document.getElementById("userQuery");
+
+    // 🔸 Initialize RAG system
+    window.onload = async () => {
+      try {
+        const res = await fetch("/index"); // FastAPI root endpoint
+        const data = await res.json();
+
+        if (res.ok && data.Status === "Ok") {
+          // ✅ Initialization complete
+          loadingScreen.remove();
+  chatContainer.classList.remove("d-none");
+
+          chatArea.innerHTML += `
+            <div class="text-center text-success mb-3">
+              ✅ RAG system initialized successfully.
+            </div>`;
+        } else {
+          loadingScreen.innerHTML = `<h5 class="text-danger">❌ Initialization failed</h5>`;
+        }
+      } catch (err) {
+        console.error("Initialization error:", err);
+        loadingScreen.innerHTML = `<h5 class="text-danger">⚠️ Initialization error</h5>`;
+      }
+    };
+
+    // 🔸 Handle Enter key to send query
+    input.addEventListener("keydown", async (event) => {
+      if (event.key === "Enter") {
+        const query = input.value.trim();
+        if (!query) return;
+        input.value = '';
+
+        chatArea.innerHTML += `
+          <div class="text-right mb-2">
+            <span class="badge badge-primary p-2">${query}</span>
+          </div>`;
+
+        try {
+          const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+          const data = await res.json();
+
+          if (data.results && data.results.length > 0) {
+            data.results.forEach(item => {
+              const doc = item.document;
+              const score = item.score;
+              const snippet = item.Snippet;
+
+              chatArea.innerHTML += `
+              
+                <div class="text-left mb-3">
+                  <div class="bg-light text-dark p-2 rounded">
+                    <strong>${doc}</strong>
+                    <small class="text-muted">(${score.toFixed(3)})</small><br>
+                    <small>${snippet}</small>
+                  </div>
+                </div>`;
+            });
+          } else {
+            chatArea.innerHTML += `
+              <div class="text-left text-muted">No relevant documents found.</div>`;
+          }
+
+          chatArea.scrollTop = chatArea.scrollHeight;
+        } catch (err) {
+          console.error("Search error:", err);
+        }
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
