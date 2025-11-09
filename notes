@@ -1,0 +1,14 @@
+Forumula :
+
+cosineSim = (A.B)/||A||.||B||
+
+TF-IDF = TF(word,Doc) * IDF(word)
+
+TF(Word,Doc) = No. of times word in a single doc / 
+               Total no. words in single document
+
+IDF(Word) = log(1+N/1+Nt)+1
+
+N = total no. of document
+Nt = "t" term appears in how many document
+
