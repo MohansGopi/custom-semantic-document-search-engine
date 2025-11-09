@@ -37,7 +37,7 @@ source venv/bin/activate
 4. Install the required Python packages:
 
 ```bash
-pip install fastapi uvicorn python-dotenv numpy
+pip install -r requirements.txt
 ```
 
 ### 3. Configuration and Data Setup
