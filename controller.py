@@ -238,7 +238,7 @@ class ragControll:
           "score":float(score),
           "Snippet":"".join(docs[key].split(".")[:2])
                         })
-  
+  result = sorted(result, key=lambda x: x['score'], reverse=True)
   return result
 
 
@@ -285,4 +285,5 @@ class ragControll:
 
 
    
+
 
